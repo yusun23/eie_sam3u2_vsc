@@ -156,36 +156,47 @@ static void UserApp1SM_Idle(void)
      const u8 correctPassword[] = {1,2,1,2,1,2,1,2,1,2};
      static correct = FALSE;
      static wrong = TRUE;
+     static pass_through = TRUE;
      static u16 hold = 0;
      static u8 buttonPressed = 0;
+
      if(yellow3On)
      {
+      LedOn(RED3);
       LedOn(GREEN3);
-      LedOn(BLUE3);
      } 
      if(IsButtonHeld(BUTTON0, 2000) && IsButtonHeld(BUTTON1, 2000))
      {
       for (u8 i = 0; i< (sizeof(password)/sizeof(u8)); i++)
       {
-        if(password[i] == correctPassword[i])
+        if(password[i] != correctPassword[i])
         {
           correct = FALSE;
+          pass_through = FALSE;
+          wrong = TRUE;
           break;
         }
         else
         {
           correct = TRUE;
+          wrong = FALSE;
+          pass_through = FALSE;
         }
       }
-      if(correct == TRUE)
+      if(correct == TRUE && wrong == FALSE && pass_through == FALSE)
       {
-
+        LedBlink(GREEN3, LED_2HZ);
+        hold++;
+        if (hold >= 2000)
+        {
+          LedOn(GREEN3);
+        }
       }
      }
-     if(correct == FALSE && wrong == TRUE)
+     if(correct == FALSE && pass_through == FALSE && pass_through == FALSE)
       {
         LedOff(GREEN3);
-        LedOff(BLUE3);
+        LedOff(RED3);
         yellow3On = FALSE;
         LedBlink(RED3, LED_2HZ);
         if (hold > 2000)
@@ -194,12 +205,13 @@ static void UserApp1SM_Idle(void)
           wrong = FALSE;
           hold = 0;
           yellow3On = TRUE;
+          pass_through = TRUE;
         }
       }
       else if (correct == TRUE && wrong == FALSE)
       {
         LedOff(GREEN3);
-        LedOff(BLUE3);
+        LedOff(RED3);
         yellow3On = FALSE;
         LedBlink(GREEN3, LED_2HZ);
       }
