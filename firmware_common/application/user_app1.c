@@ -172,7 +172,6 @@ static void UserApp1SM_Idle(void)
         {
           correct = FALSE;
           wrong = TRUE;
-          buttonPressed = 0;
           break;
         }
         else
@@ -184,11 +183,13 @@ static void UserApp1SM_Idle(void)
      }
      if(correct == TRUE && wrong == FALSE)
       {
+        yellow3On = FALSE;
         if (hold == 0)
         {
           LedOff(GREEN3);
           LedOff(RED3);
           LedBlink(GREEN3, LED_2HZ);
+          buttonPressed = 0;
         }
         hold++;
         if (hold >= 2000)
@@ -198,13 +199,12 @@ static void UserApp1SM_Idle(void)
       }
       if(correct == FALSE && wrong == TRUE)
       {
+        yellow3On = FALSE;
         if (hold == 0)
         {
           LedOff(GREEN3);
           LedOff(RED3);
-          yellow3On = FALSE;
           LedBlink(RED3, LED_2HZ);
-          hold = 0;
         }
         hold++;
         if (hold > 2000)
@@ -213,6 +213,7 @@ static void UserApp1SM_Idle(void)
           wrong = FALSE;
           hold = 0;
           yellow3On = TRUE;
+          buttonPressed = 0;
         }
       }
       if(WasButtonPressed(BUTTON0))
