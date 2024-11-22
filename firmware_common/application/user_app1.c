@@ -155,8 +155,7 @@ static void UserApp1SM_Idle(void)
      static u8 password[] = {0,0,0,0,0};
      const u8 correctPassword[] = {1,1,1,1,1};
      static correct = FALSE;
-     static wrong = TRUE;
-     static pass_through = TRUE;
+     static wrong = FALSE;
      static u16 hold = 0;
      static u8 buttonPressed = 0;
 
@@ -172,73 +171,66 @@ static void UserApp1SM_Idle(void)
         if(password[i] != correctPassword[i])
         {
           correct = FALSE;
-          pass_through = FALSE;
           wrong = TRUE;
+          buttonPressed = 0;
           break;
         }
         else
         {
           correct = TRUE;
           wrong = FALSE;
-          pass_through = FALSE;
         }
       }
-      if(correct == TRUE && wrong == FALSE && pass_through == FALSE)
+     }
+     if(correct == TRUE && wrong == FALSE)
       {
-        LedBlink(GREEN3, LED_2HZ);
+        if (hold == 0)
+        {
+          LedOff(GREEN3);
+          LedOff(RED3);
+          LedBlink(GREEN3, LED_2HZ);
+        }
         hold++;
         if (hold >= 2000)
         {
           LedOn(GREEN3);
         }
       }
-     }
-     if(correct == FALSE && pass_through == FALSE && pass_through == FALSE)
+      if(correct == FALSE && wrong == TRUE)
       {
-        LedOff(GREEN3);
-        LedOff(RED3);
-        yellow3On = FALSE;
-        LedBlink(RED3, LED_2HZ);
+        if (hold == 0)
+        {
+          LedOff(GREEN3);
+          LedOff(RED3);
+          yellow3On = FALSE;
+          LedBlink(RED3, LED_2HZ);
+          hold = 0;
+        }
+        hold++;
         if (hold > 2000)
         {
           LedOff(RED3);
           wrong = FALSE;
           hold = 0;
           yellow3On = TRUE;
-          pass_through = TRUE;
         }
-      }
-      else if (correct == TRUE && wrong == FALSE)
-      {
-        LedOff(GREEN3);
-        LedOff(RED3);
-        yellow3On = FALSE;
-        LedBlink(GREEN3, LED_2HZ);
       }
       if(WasButtonPressed(BUTTON0))
       {
         ButtonAcknowledge(BUTTON0);
-        if(buttonPressed < 10)
+        if(buttonPressed < 5)
         {
           password[buttonPressed] = 1;
           buttonPressed++;
-        }
-        if(buttonPressed >= 10)
-        {
-          buttonPressed = 0;
         }
       }
       if(WasButtonPressed(BUTTON1))
       {
         ButtonAcknowledge(BUTTON1);
-        if(buttonPressed < 10)
+        if(buttonPressed < 5)
         {
           password[buttonPressed] = 2;
           buttonPressed++;
-        }
-        if(buttonPressed >= 10)
-        {
-          buttonPressed = 0;
         }
       }
      /*
