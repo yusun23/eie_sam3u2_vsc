@@ -152,8 +152,8 @@ static void UserApp1SM_Idle(void)
      static u8 u8BlinkRateIndex = 0;
      */
      static yellow3On = TRUE;
-     static u8 password[] = {0,0,0,0,0,0,0,0,0,0};
-     const u8 correctPassword[] = {1,2,1,2,1,2,1,2,1,2};
+     static u8 password[] = {0,0,0,0,0};
+     const u8 correctPassword[] = {1,1,1,1,1};
      static correct = FALSE;
      static wrong = TRUE;
      static pass_through = TRUE;
