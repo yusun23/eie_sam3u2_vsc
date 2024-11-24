@@ -17,8 +17,6 @@ volatile u32 G_u32SystemTime1s  = 0;     /*!< @brief Global system time incremen
 volatile u32 G_u32SystemFlags   = 0;     /*!< @brief Global system flags */
 volatile u32 G_u32ApplicationFlags = 0;  /*!< @brief Global system application flags: set when application is successfully initialized */
 
-u8 G_au8DebugScanfBuffer[DEBUG_SCANF_BUFFER_SIZE];     /*!< @brief Space to latch characters for DebugScanf() */
-u8 G_u8DebugScanfCharCount = 0;                        /*!< @brief Counter for # of characters in Debug_au8ScanfBuffer */
 /* Task short names corresponding to G_u32ApplicationFlags in main.h */
 #ifdef EIE_ASCII
 const u8 G_aau8AppShortNames[NUMBER_APPLICATIONS][MAX_TASK_NAME_SIZE] = 
