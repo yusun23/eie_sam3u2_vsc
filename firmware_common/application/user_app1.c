@@ -54,7 +54,8 @@ extern volatile u32 G_u32SystemTime1s;                    /*!< @brief From main.
 extern volatile u32 G_u32SystemFlags;                     /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;                /*!< @brief From main.c */
 
-
+extern u8 G_au8DebugScanfBuffer[DEBUG_SCANF_BUFFER_SIZE];     // From debug.c
+extern u8 G_u8DebugScanfCharCount;                        // From debug.c
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
 Variable names shall start with "UserApp1_<type>" and be declared as static.
@@ -92,6 +93,7 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  #if 0
   u8 au8String1[] = "\n\rA string to print that starts and ends with a line feed and cursor return.\n\r";
   u8 au8String2[] = "Here's a number: ";
   u8 au8String3[] = " <-- The 'cursor' was here.";
@@ -104,7 +106,8 @@ void UserApp1Initialize(void)
   DebugLineFeed();
   DebugPrintf(au8String3);
   DebugLineFeed();
-  
+  #endif
+
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -153,7 +156,16 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-     
+   static u8 au8NumCharsMessage[] = "\n\rCharacters in buffer: ";
+
+   // Print message with number of characters in scanf buffer if BUTTON0 was pressed
+   if(WasButtonPressed(BUTTON0))
+   {
+      ButtonAcknowledge(BUTTON0);
+      DebugPrintf(au8NumCharsMessage);
+      DebugPrintNumber(G_u8DebugScanfCharCount);
+      DebugLineFeed();
+   }  
 } /* end UserApp1SM_Idle() */
      
 
