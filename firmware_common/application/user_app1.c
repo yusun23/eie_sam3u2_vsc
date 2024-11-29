@@ -60,6 +60,7 @@ Global variable definitions with scope limited to this local application.
 Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
+extern const u8 aau8TestPosition[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
 
@@ -92,6 +93,7 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  LcdClearScreen();
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -140,7 +142,44 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-     
+  /*
+  //Turn on a pixel at the center of the screen:
+  PixelAddressType sTargetPixel = {32, 64};
+  LcdSetPixel(&sTargetPixel);
+  //Turn off a pixel in the center of the screen:
+  PixelAddressType sTargetPixel = {32, 64};
+  LcdClearPixel(&sTargetPixel);
+  
+  //Clear a 25 x 30 block of pixels in the top-left corner of the LCD:
+  PixelBlockType sPixelsToClear = {0, 127, 25, 30};
+  sPixelsToClear.u16RowStart = 0;
+  sPixelsToClear.u16ColumnStart = 0;
+  sPixelsToClear.u16RowSize = 25;
+  sPixelsToClear.u16ColumnSize = 30;
+  LcdClearPixels(&sPixelsToClear);
+  
+  //Clear a 25 x 30 block of pixels in the bottom-right corner of the LCD:
+  PixelBlockType sPixelsToClear2;
+  sPixelsToClear2.u16RowSize = 25;
+  sPixelsToClear2.u16ColumnSize = 30;
+  sPixelsToClear2.u16RowStart = U16_LCD_BOTTOM_MOST_ROW - sPixelsToClear2.u16RowSize;
+  sPixelsToClear2.u16ColumnStart = U16_LCD_RIGHT_MOST_COLUMN - sPixelsToClear2.u16ColumnSize;
+  LcdClearPixels(&sPixelsToClear2);
+  */
+  // Load a string on the bottom text line left justified.
+  PixelAddressType *sTestStringLocation = {U8_LCD_SMALL_FONT_LINE3, U16_LCD_LEFT_MOST_COLUMN};
+  u8 au8TestString[] = {"Testing"};
+  LcdLoadString(au8TestString, LCD_FONT_SMALL, &sTestStringLocation);
+
+  // Load the test screen image referenced to the top left corner of the screen
+
+  PixelBlockType sTestImage;
+  sTestImage.u16RowStart = 0;
+  sTestImage.u16ColumnStart = 0;
+  sTestImage.u16RowSize = 50;
+  sTestImage.u16ColumnSize = 50;
+  LcdLoadBitmap(&aau8TestPosition[0][0], &sTestImage);
+
 } /* end UserApp1SM_Idle() */
      
 
