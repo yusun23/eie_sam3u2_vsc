@@ -152,98 +152,127 @@ static void UserApp1SM_Idle(void)
      static u8 u8BlinkRateIndex = 0;
      */
      static yellow3On = TRUE;
-     static normalState = FALSE;
-     static settingState = FALSE;
+     static normal = FALSE;
+     static setting = FALSE;
+     static oneTime = FALSE;
      static u8 password[] = {0,0,0,0,0};
-     const u8 correctPassword[] = {1,1,1,1,1};
+     static u8 correctPassword[] = {1,1,1,1,1};
      static correct = FALSE;
      static wrong = FALSE;
      static u16 hold = 0;
      static u8 buttonPressed = 0;
      static u16 u16counter = 0;
-     if (u16counter <= 3000)
+     if (u16counter < 3000 && setting == FALSE)
      {
-        LedOn(RED0);
-        LedOn(BLUE0);
-        LedOn(GREEN0);
-        if(WasButtonPressedButtonHeld(BUTTON0))
+        LedOn(RED3);
+        LedOn(BLUE3);
+        LedOn(GREEN3);
+        if(WasButtonPressed(BUTTON1))
         {
-          settingState = TRUE;
-          LedOff(RED0);
-          LedOff(BLUE0);
-          LedOff(GREEN0);
-          LedBlink(,)
-        }
-        else
-          normalState = TRUE;
-     }
-     if (settingState == TRUE);
-
-     else if(normalState == TRUE)
-     {
-     if(yellow3On)
-     {
-      LedOn(RED3);
-      LedOn(GREEN3);
-     } 
-     if(IsButtonHeld(BUTTON0, 2000) && IsButtonHeld(BUTTON1, 2000))
-     {
-      for (u8 i = 0; i< (sizeof(password)/sizeof(u8)); i++)
-      {
-        if(password[i] != correctPassword[i])
-        {
-          correct = FALSE;
-          wrong = TRUE;
-          break;
-        }
-        else
-        {
-          correct = TRUE;
-          wrong = FALSE;
-        }
-      }
-     }
-     if(correct == TRUE && wrong == FALSE)
-      {
-        yellow3On = FALSE;
-        if (hold == 0)
-        {
+          ButtonAcknowledge(BUTTON1);
+          setting = TRUE;
+          normal = FALSE;
+          oneTime = TRUE;
+          LedOff(RED3);
+          LedOff(BLUE3);
           LedOff(GREEN3);
+        }
+     }
+     else if (u16counter == 3000 && setting == FALSE)
+     {
+        normal = TRUE;
+        LedOff(RED3);
+        LedOff(BLUE3);
+        LedOff(GREEN3);
+     }
+     u16counter++;
+     if (setting == TRUE && normal == FALSE)
+     {
+        if (oneTime == TRUE)
+        {
+          LedBlink(RED3,LED_2HZ);
+          LedBlink(GREEN3,LED_2HZ);
+          LedBlink(BLUE3,LED_2HZ);
+          oneTime = FALSE;
+        }
+        if (IsButtonHeld(BUTTON0, 2000) && IsButtonHeld(BUTTON1, 2000))
+        {
+          setting = FALSE;
+          normal = TRUE;
           LedOff(RED3);
-          LedBlink(GREEN3, LED_2HZ);
-          buttonPressed = 0;
-        }
-        hold++;
-        if (hold >= 2000)
-        {
-          LedOn(GREEN3);
-        }
-      }
-      if(correct == FALSE && wrong == TRUE)
-      {
-        yellow3On = FALSE;
-        if (hold == 0)
-        {
+          LedOff(BLUE3);
           LedOff(GREEN3);
-          LedOff(RED3);
-          LedBlink(RED3, LED_2HZ);
         }
-        hold++;
-        if (hold > 2000)
+     }
+     else if(normal == TRUE && setting == FALSE)
+     {
+       if(yellow3On)
+       {
+        LedOn(RED3);
+        LedOn(GREEN3);
+       } 
+       if(IsButtonHeld(BUTTON0, 2000) && IsButtonHeld(BUTTON1, 2000))
+       {
+        for (u8 i = 0; i< (sizeof(password)/sizeof(u8)); i++)
         {
-          LedOff(RED3);
-          wrong = FALSE;
-          hold = 0;
-          yellow3On = TRUE;
-          buttonPressed = 0;
+          if(password[i] != correctPassword[i])
+          {
+            correct = FALSE;
+            wrong = TRUE;
+            break;
+          }
+          else
+          {
+            correct = TRUE;
+            wrong = FALSE;
+          }
         }
+       }
+       if(correct == TRUE && wrong == FALSE)
+       {
+         yellow3On = FALSE;
+         if (hold == 0)
+         {
+           LedOff(GREEN3);
+           LedOff(RED3);
+           LedBlink(GREEN3, LED_2HZ);
+           buttonPressed = 0;
+         }
+         hold++;
+         if (hold >= 2000)
+         {
+           LedOn(GREEN3);
+         }
+       }
+       if(correct == FALSE && wrong == TRUE)
+       {
+         yellow3On = FALSE;
+         if (hold == 0)
+         {
+           LedOff(GREEN3);
+           LedOff(RED3);
+           LedBlink(RED3, LED_2HZ);
+         }
+         hold++;
+         if (hold > 2000)
+         {
+           LedOff(RED3);
+           wrong = FALSE;
+           hold = 0;
+           yellow3On = TRUE;
+           buttonPressed = 0;
+         }
+       }
       }
       if(WasButtonPressed(BUTTON0))
       {
         ButtonAcknowledge(BUTTON0);
         if(buttonPressed < 5)
         {
-          password[buttonPressed] = 1;
+          if (setting == TRUE)
+            correctPassword[buttonPressed] = 1;
+          else if (normal == TRUE)
+            password[buttonPressed] = 1;
           buttonPressed++;
         }
       }
@@ -252,11 +281,13 @@ static void UserApp1SM_Idle(void)
         ButtonAcknowledge(BUTTON1);
         if(buttonPressed < 5)
         {
-          password[buttonPressed] = 2;
+          if (setting == TRUE)
+            correctPassword[buttonPressed] = 2;
+          else if (normal == TRUE)
+            password[buttonPressed] = 2;
           buttonPressed++;
         }
       }
-     }
      /*
      // Turn on the LCD backlight if BUTTON0 has been held for 2 seconds
      if(IsButtonHeld(BUTTON0, 2000))
