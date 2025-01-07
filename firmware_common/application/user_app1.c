@@ -152,13 +152,35 @@ static void UserApp1SM_Idle(void)
      static u8 u8BlinkRateIndex = 0;
      */
      static yellow3On = TRUE;
+     static normalState = FALSE;
+     static settingState = FALSE;
      static u8 password[] = {0,0,0,0,0};
      const u8 correctPassword[] = {1,1,1,1,1};
      static correct = FALSE;
      static wrong = FALSE;
      static u16 hold = 0;
      static u8 buttonPressed = 0;
+     static u16 u16counter = 0;
+     if (u16counter <= 3000)
+     {
+        LedOn(RED0);
+        LedOn(BLUE0);
+        LedOn(GREEN0);
+        if(WasButtonPressedButtonHeld(BUTTON0))
+        {
+          settingState = TRUE;
+          LedOff(RED0);
+          LedOff(BLUE0);
+          LedOff(GREEN0);
+          LedBlink(,)
+        }
+        else
+          normalState = TRUE;
+     }
+     if (settingState == TRUE);
 
+     else if(normalState == TRUE)
+     {
      if(yellow3On)
      {
       LedOn(RED3);
@@ -234,6 +256,7 @@ static void UserApp1SM_Idle(void)
           buttonPressed++;
         }
       }
+     }
      /*
      // Turn on the LCD backlight if BUTTON0 has been held for 2 seconds
      if(IsButtonHeld(BUTTON0, 2000))
