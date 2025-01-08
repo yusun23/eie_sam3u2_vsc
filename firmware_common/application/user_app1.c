@@ -114,7 +114,7 @@ void UserApp1Initialize(void)
   {
     UserApp1_au8UserInputBuffer[i] = '\0';
   }
-
+  DebugSetPassthrough();
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -165,8 +165,50 @@ static void UserApp1SM_Idle(void)
 {
    static u8 au8NumCharsMessage[] = "\n\rCharacters in buffer: ";
    static u8 au8BufferMessage[] = "\n\rBuffer contents: \n\r";
+   static u8 au8NameMessage[] = "\n\rNumber of names: \n\r";
+   static u8 updated = FALSE;
    u8 u8CharCount;
+   u8 u8NameCount;
+   u8 u8Counter = 0;
 
+   u8CharCount = DebugScanf(UserApp1_au8UserInputBuffer);
+   UserApp1_au8UserInputBuffer[u8CharCount] = '\0';
+   for (u8Counter = 7; u8Counter<u8CharCount; u8Counter++)
+   {
+     if (UserApp1_au8UserInputBuffer[u8Counter - 7] == 'Y')
+       if (UserApp1_au8UserInputBuffer[u8Counter - 6] == 'u')
+        if (UserApp1_au8UserInputBuffer[u8Counter - 5] == ' ')
+         if (UserApp1_au8UserInputBuffer[u8Counter - 4] == 'X')
+          if (UserApp1_au8UserInputBuffer[u8Counter - 3] == 'i')
+           if (UserApp1_au8UserInputBuffer[u8Counter - 2] == 'a')
+            if (UserApp1_au8UserInputBuffer[u8Counter - 1] == 'n')
+             if (UserApp1_au8UserInputBuffer[u8Counter] == 'g')
+             {
+              u8NameCount++;
+              u8Counter+=8;
+              updated = TRUE;
+             }
+   }
+   if (updated == TRUE) 
+   {  
+     DebugPrintf(au8NameMessage);
+     u8 u8StarCount = u8NameCount/10;
+     DebugPrintf("\n\r");
+     for(int i = 0; i<=u8NameCount; i++)
+     {
+       DebugPrintf("*");
+     }
+     DebugPrintf("\n\r*");
+     DebugPrintf(u8NameCount);
+     DebugPrintf("*\n\r");
+     for(int i = 0; i<=u8NameCount; i++)
+     {
+       DebugPrintf("*");
+     }
+     DebugLineFeed();
+     updated = FALSE;
+   }
+   /*
    // Print buffer contents when BUTTON1 is pressed
    if(WasButtonPressed(BUTTON1))
    {
@@ -190,7 +232,7 @@ static void UserApp1SM_Idle(void)
       DebugPrintNumber(G_u8DebugScanfCharCount);
       DebugLineFeed();
    }  
-
+*/
 } /* end UserApp1SM_Idle() */
      
 
