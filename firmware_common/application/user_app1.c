@@ -61,7 +61,24 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 extern const u8 aau8TestPosition[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
-//static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
+const u8 symbolLightning[U8_LCD_IMAGE_ROW_SIZE_25PX][U8_LCD_IMAGE_COL_BYTES_25PX] = { /* BigFont */
+{0x80, 0x00},
+{0xC0, 0x00},
+{0xE0, 0x00},
+{0x78, 0x00},
+{0xFC, 0x00},
+{0xFE, 0x03},
+{0xFF, 0x03},
+{0xF0, 0x01},
+{0xF8, 0x00},
+{0x78, 0x00},
+{0x38, 0x00},
+{0x1C, 0x00},
+{0x0C, 0x00},
+{0x04, 0x00},
+};
+const u8 UserApp1_au8Name[] = {"Yu Xiang"};
+// static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 
 
 /**********************************************************************************************************************
@@ -166,20 +183,59 @@ static void UserApp1SM_Idle(void)
   sPixelsToClear2.u16ColumnStart = U16_LCD_RIGHT_MOST_COLUMN - sPixelsToClear2.u16ColumnSize;
   LcdClearPixels(&sPixelsToClear2);
   */
+  /*
   // Load a string on the bottom text line left justified.
-  PixelAddressType *sTestStringLocation = {U8_LCD_SMALL_FONT_LINE3, U16_LCD_LEFT_MOST_COLUMN};
+  PixelAddressType sTestStringLocation = {U8_LCD_SMALL_FONT_LINE3, U16_LCD_LEFT_MOST_COLUMN};
   u8 au8TestString[] = {"Testing"};
   LcdLoadString(au8TestString, LCD_FONT_SMALL, &sTestStringLocation);
-
+  */
   // Load the test screen image referenced to the top left corner of the screen
-
+  /*
   PixelBlockType sTestImage;
   sTestImage.u16RowStart = 0;
   sTestImage.u16ColumnStart = 0;
   sTestImage.u16RowSize = 50;
   sTestImage.u16ColumnSize = 50;
   LcdLoadBitmap(&aau8TestPosition[0][0], &sTestImage);
-
+  */
+  /*
+  PixelBlockType sPersonalImage;
+  static u16 timestamp = 0;
+  if (WasButtonPressed(BUTTON0) == TRUE)
+  {
+    ButtonAcknowledge(BUTTON0);
+    int random_x = (timestamp % (U16_LCD_BOTTOM_MOST_ROW - 25));
+    int random_y = ((timestamp / 10) % (U16_LCD_RIGHT_MOST_COLUMN - 25));
+    sPersonalImage.u16RowStart = random_y;
+    sPersonalImage.u16ColumnStart = random_x;
+    sPersonalImage.u16RowSize = 25;
+    sPersonalImage.u16ColumnSize = 25;
+    LcdClearScreen();
+    LcdLoadBitmap(&symbolLightning[0][0], &sPersonalImage);
+  }
+  timestamp++;
+  */
+  
+  static PixelAddressType nameLocation = {U16_LCD_TOP_MOST_ROW, U16_LCD_LEFT_MOST_COLUMN};
+  if (WasButtonPressed(BUTTON0))
+  {
+    ButtonAcknowledge(BUTTON0);
+    nameLocation.u16PixelRowAddress++;
+    if(nameLocation.u16PixelRowAddress == U16_LCD_BOTTOM_MOST_ROW)
+      nameLocation.u16PixelRowAddress = U16_LCD_TOP_MOST_ROW;
+    LcdClearScreen();
+    LcdLoadString(UserApp1_au8Name, LCD_FONT_SMALL, &nameLocation);
+  }
+  if (WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    nameLocation.u16PixelColumnAddress++;
+    if(nameLocation.u16PixelColumnAddress == U16_LCD_RIGHT_MOST_COLUMN)
+      nameLocation.u16PixelColumnAddress = U16_LCD_LEFT_MOST_COLUMN;
+    LcdClearScreen();
+    LcdLoadString(UserApp1_au8Name, LCD_FONT_SMALL, &nameLocation);
+  }
+  
 } /* end UserApp1SM_Idle() */
      
 
