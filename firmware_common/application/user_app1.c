@@ -198,14 +198,14 @@ static void UserApp1SM_Idle(void)
   sTestImage.u16ColumnSize = 50;
   LcdLoadBitmap(&aau8TestPosition[0][0], &sTestImage);
   */
-  /*
+  
   PixelBlockType sPersonalImage;
   static u16 timestamp = 0;
   if (WasButtonPressed(BUTTON0) == TRUE)
   {
     ButtonAcknowledge(BUTTON0);
-    int random_x = (timestamp % (U16_LCD_BOTTOM_MOST_ROW - 25));
-    int random_y = ((timestamp / 10) % (U16_LCD_RIGHT_MOST_COLUMN - 25));
+    int random_x = (timestamp % (U16_LCD_RIGHT_MOST_COLUMN - 25));
+    int random_y = ((timestamp / 10) % (U16_LCD_BOTTOM_MOST_ROW - 25));
     sPersonalImage.u16RowStart = random_y;
     sPersonalImage.u16ColumnStart = random_x;
     sPersonalImage.u16RowSize = 25;
@@ -214,8 +214,8 @@ static void UserApp1SM_Idle(void)
     LcdLoadBitmap(&symbolLightning[0][0], &sPersonalImage);
   }
   timestamp++;
-  */
   
+  /*
   static PixelAddressType nameLocation = {U16_LCD_TOP_MOST_ROW, U16_LCD_LEFT_MOST_COLUMN};
   if (WasButtonPressed(BUTTON0))
   {
@@ -235,7 +235,7 @@ static void UserApp1SM_Idle(void)
     LcdClearScreen();
     LcdLoadString(UserApp1_au8Name, LCD_FONT_SMALL, &nameLocation);
   }
-  
+  */
 } /* end UserApp1SM_Idle() */
      
 
