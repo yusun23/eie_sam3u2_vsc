@@ -66,7 +66,6 @@ u32 G_u32DebugFlags;                                   /*!< @brief Debug flag re
 u8 G_au8DebugScanfBuffer[DEBUG_SCANF_BUFFER_SIZE];     /*!< @brief Space to latch characters for DebugScanf() */
 u8 G_u8DebugScanfCharCount = 0;                        /*!< @brief Counter for # of characters in Debug_au8ScanfBuffer */
 
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Existing variables (defined in other files -- should all contain the "extern" keyword) */
 extern volatile u32 G_u32SystemTime1ms;                /*!< @brief From main.c */

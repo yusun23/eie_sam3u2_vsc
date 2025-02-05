@@ -54,14 +54,14 @@ extern volatile u32 G_u32SystemTime1s;                    /*!< @brief From main.
 extern volatile u32 G_u32SystemFlags;                     /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;                /*!< @brief From main.c */
 
-
+extern u8 G_au8DebugScanfBuffer[DEBUG_SCANF_BUFFER_SIZE]; // From debug.c
+extern u8 G_u8DebugScanfCharCount;                        // From debug.c
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
 Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
-
 
 /**********************************************************************************************************************
 Function Definitions
@@ -93,7 +93,6 @@ Promises:
 void UserApp1Initialize(void)
 {
   PWMAudioSetFrequency(BUZZER1, 500);
-
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -142,9 +141,88 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-  static u16 au16Notes[] = {C4, D4, E4, F4, G4, A4, B4, C5};
+  static u16 au16Notes[4][12] = {{C3, C3S, D3, D3S, E3, F3, F3S, G3, G3S, A3, A3S, B3},
+                                 {C4, C4S, D4, D4S, E4, F4, F4S, G4, G4S, A4, A4S, B4},
+                                 {C5, C5S, D5, D5S, E5, F5, F5S, G5, G5S, A5, A5S, B5},
+                                 {C6, C6S, D6, D6S, E6, F6, F6S, G6, G6S, A6, A6S, B6}};
   static u8 u8NoteIndex = 0;
-
+  static u8 notesPlayed = 0;
+  static u8 newNote = 0;
+  static u16 count = 0;
+  static u8 octave = 1;
+  notesPlayed = G_u8DebugScanfCharCount;
+  if(G_u8DebugScanfCharCount >= DEBUG_SCANF_BUFFER_SIZE)
+  {
+    for(int i = 0; i < DEBUG_SCANF_BUFFER_SIZE; i++)
+    {
+      G_au8DebugScanfBuffer[i]='\0';
+    }
+    newNote = 0;
+  }
+  switch (G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1])
+  {
+    case 'z':
+      u8NoteIndex = 0;
+      break;
+    case 's':
+      u8NoteIndex = 1;
+      break;
+    case 'x':
+      u8NoteIndex = 2;
+      break;
+    case 'd':
+      u8NoteIndex = 3;
+      break;
+    case 'c':
+      u8NoteIndex = 4;
+      break;
+    case 'v':
+      u8NoteIndex = 5;
+      break;
+    case 'g':
+      u8NoteIndex = 6;
+      break;
+    case 'b':
+      u8NoteIndex = 7;
+      break;
+    case 'h':
+      u8NoteIndex = 8;
+      break;
+    case 'n':
+      u8NoteIndex = 9;
+      break;
+    case 'j':
+      u8NoteIndex = 10;
+      break;
+    case 'm':
+      u8NoteIndex = 11;
+      break;
+  }
+  if (newNote >= DEBUG_SCANF_BUFFER_SIZE)
+    newNote = 0;
+  if (WasButtonPressed(BUTTON0) && octave > 0)
+  {
+    ButtonAcknowledge(BUTTON0);
+    octave--;
+  }
+  if (WasButtonPressed(BUTTON1) && octave < 3)
+  {
+    ButtonAcknowledge(BUTTON1);
+    octave++;
+  }
+  PWMAudioSetFrequency(BUZZER1, au16Notes[octave][u8NoteIndex]);
+  if (notesPlayed > newNote)
+  {
+    PWMAudioOn(BUZZER1);
+    count++;
+    if(count >= 300)
+    {
+      newNote++;
+      count = 0;
+      PWMAudioOff(BUZZER1);
+    } 
+  }
+  /*
   // Activate the current note
   if(IsButtonPressed(BUTTON0))
   {
@@ -167,6 +245,7 @@ static void UserApp1SM_Idle(void)
 
     PWMAudioSetFrequency(BUZZER1, au16Notes[u8NoteIndex]);
   }
+  */
 } /* end UserApp1SM_Idle() */
      
 
