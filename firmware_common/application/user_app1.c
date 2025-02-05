@@ -67,7 +67,8 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
-
+static u32 UserApp1_u32DataMsgCount = 0; // ANT_DATA packet counter
+static u32 UserApp1_u32TickMsgCount = 0; // ANT_TICK packet counter
 
 /**********************************************************************************************************************
 Function Definitions
@@ -98,45 +99,52 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  PixelAddressType sStringLocation;
+  u8 au8WelcomeMessage[] = "ANT Slave Demo";
   AntAssignChannelInfoType sChannelInfo;
 
-  if(AntRadioStatusChannel(U8_ANT_CHANNEL_USERAPP) == ANT_UNCONFIGURED)
+  if(AntRadioStatusChannel(ANT_CHANNEL_0) == ANT_UNCONFIGURED)
   {
-    sChannelInfo.AntChannel = U8_ANT_CHANNEL_PERIOD_HI_USERAPP;
+    sChannelInfo.AntChannel = ANT_CHANNEL_0;
     sChannelInfo.AntChannelType = CHANNEL_TYPE_MASTER;
-    sChannelInfo.AntChannelPeriodHi = U8_ANT_CHANNEL_PERIOD_HI_USERAPP;
-    sChannelInfo.AntChannelPeriodLo = U8_ANT_CHANNEL_PERIOD_LO_USERAPP;
+    sChannelInfo.AntChannelPeriodHi = ANT_CHANNEL_PERIOD_HI_DEFAULT;
+    sChannelInfo.AntChannelPeriodLo = ANT_CHANNEL_PERIOD_LO_DEFAULT;
     
-    sChannelInfo.AntDeviceIdHi = U8_ANT_DEVICE_HI_USERAPP;
-    sChannelInfo.AntDeviceIdLo = U8_ANT_DEVICE_LO_USERAPP;
-    sChannelInfo.AntDeviceType = U8_ANT_DEVICE_TYPE_USERAPP;
-    sChannelInfo.AntTransmissionType = U8_ANT_TRANSMISSION_TYPE_USERAPP;
+    sChannelInfo.AntDeviceIdHi = 0x00;
+    sChannelInfo.AntDeviceIdLo = 0x01;
+    sChannelInfo.AntDeviceType = ANT_DEVICE_TYPE_DEFAULT;
+    sChannelInfo.AntTransmissionType = ANT_TRANSMISSION_TYPE_DEFAULT;
     
-    sChannelInfo.AntFrequency = U8_ANT_FREQUENCY_USERAPP;
-    sChannelInfo.AntTxPower = U8_ANT_TX_POWER_USERAPP;
+    sChannelInfo.AntFrequency = ANT_FREQUENCY_DEFAULT;
+    sChannelInfo.AntTxPower = ANT_TX_POWER_DEFAULT;
     
     sChannelInfo.AntNetwork = ANT_NETWORK_DEFAULT;
     for(u8 i = 0; i < ANT_NETWORK_NUMBER_BYTES; i++)
     {
       sChannelInfo.AntNetworkKey[i] = ANT_DEFAULT_NETWORK_KEY;
     }
-    
-    AntAssignChannel(&sChannelInfo);
-  }  
+  }  // End if (AntRadioStatusChannel...)
 
-  /* Initialize the LCD message */
+  // Update LEDs and LCD message for ANT Slave Demo
+  LedOn(RED0);
 
-  /* If good initialization, set state to Idle */
-  if( 1 )
+  // Write the board string in the middle of last row
+  sStringLocation.u16PixelColumnAddress = U16_LCD_CENTER_COLUMN - (strlen((char const*)au8WelcomeMessage) * (U8_LCD_SMALL_FONT_COLUMNS + U8_LCD_SMALL_FONT_SPACE) / 2);
+  sStringLocation.u16PixelRowAddress = U8_LCD_SMALL_FONT_LINE7;
+  LcdClearPixels(&G_sLcdClearLine7);
+  LcdLoadString(au8WelcomeMessage, LCD_FONT_SMALL, &sStringLocation);
+
+  // If good initialization, set state to UserApp1SM_WaitAntReady
+  if(AntAssignChannel(&sChannelInfo))
   {
     UserApp1_pfStateMachine = UserApp1SM_WaitAntReady;
   }
   else
   {
-    /* The task isn't properly initialized, so shut it down and don't run */
+    // The task in't properly initialized, so shut it down and don't  run
+    LedBlink(RED0, LED_4HZ);
     UserApp1_pfStateMachine = UserApp1SM_Error;
   }
-
 } /* end UserApp1Initialize() */
 
   
@@ -269,7 +277,17 @@ static void UserApp1SM_ChannelOpen(void)
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-     
+     u8 u8CurrentEventCodeExample = RESPONSE_NO_ERROR;
+
+  if(AntReadAppMessageBuffer())
+  {
+    // A new message is available! Check if DATA or TICK
+    if(G_eAntApiCurrentMessageClass == ANT_TICK)
+    {
+      // Check the event code
+      u8CurrentEventCodeExample = G_au8AntApiCurrentMessageBytes[ANT_TICK_MSG_EVENT_CODE_INDEX];
+    }
+  }
 } /* end UserApp1SM_Idle() */
      
 
