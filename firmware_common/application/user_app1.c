@@ -90,8 +90,7 @@ const u8 startLogo[U8_LCD_IMAGE_ROW_SIZE_25PX][U8_LCD_IMAGE_COL_BYTES_25PX] = {
   {0xEF, 0xFF, 0xDF, 0x01}
   };  
   
-const u8 LongBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK4PX][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK1PX] = {
- 
+const u8 LongBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK1][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3PX] = {
   {0xFF, 0xFF, 0x1F},
   {0x21, 0x84, 0x10},
   {0x21, 0x84, 0x10},
@@ -100,7 +99,7 @@ const u8 LongBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK4PX][U8_LCD_IMAGE_COLUMN_PIXEL_BL
   {0xFF, 0xFF, 0x1F}
   };
 
-const u8 LBlock [U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3] = {
+const u8 LBlock [U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0x3F, 0x00},
   {0x21, 0x00},
   {0x21, 0x00},
@@ -119,7 +118,7 @@ const u8 LBlock [U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3
   {0xFF, 0x07}
   };
 
-const u8 TBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2] = {
+const u8 TBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0xE0, 0x07},
   {0x20, 0x04},
   {0x20, 0x04},
@@ -133,7 +132,7 @@ const u8 TBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2]
   {0xFF, 0xFF}
   };    
     
-const u8 squareBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2] = {
+const u8 squareBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0xFF, 0x07},
   {0x21, 0x04},
   {0x21, 0x04},
@@ -147,7 +146,7 @@ const u8 squareBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BL
   {0xFF, 0x07}
   };      
 
-const u8 JBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3] = {
+const u8 JBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0xE0, 0x07},
   {0x20, 0x04},
   {0x20, 0x04},
@@ -166,7 +165,7 @@ const u8 JBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3]
   {0xFF, 0x07}
   };
       
-const u8 WeirdShapeLeft[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3] = {
+const u8 WeirdShapeLeft[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0x3F, 0x00},
   {0x21, 0x00},
   {0x21, 0x00},
@@ -185,7 +184,7 @@ const u8 WeirdShapeLeft[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL
   {0xE0, 0x07}
   };
 
-const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3] = {
+const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
   {0xE0, 0x07},
   {0x20, 0x04},
   {0x20, 0x04},
@@ -210,6 +209,7 @@ const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXE
 Function Definitions
 **********************************************************************************************************************/
 int random(int count);
+void assignment(int blockType, PixelBlockType *address, u8 **destination);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -240,7 +240,7 @@ void UserApp1Initialize(void)
   LcdClearScreen();
   LcdLoadString(Welcome, LCD_FONT_SMALL, &startLocation);
   PixelBlockType startImage;
-  startImage.u16RowStart = 20;
+  startImage.u16RowStart = 21;
   startImage.u16ColumnStart = 53;
   startImage.u16RowSize = 25;
   startImage.u16ColumnSize = 25;
@@ -293,20 +293,22 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-  static count = 0;
-  if (count == 2147483647)
-    count = 0;
-  count++;
-  PixelBlockType test;
-  test.u16RowStart = 20;
-  test.u16ColumnStart = 53;
-  test.u16RowSize = 16;
-  test.u16ColumnSize = 16;
-  if(WasButtonPressed(BUTTON0))
-  {
-    ButtonAcknowledge(BUTTON0);
-    LcdLoadBitmap(&WeirdBlockRight[0][0], &test);
-  }
+    static int count = 0;
+    PixelBlockType location;
+    u8 spawn = 0;
+    u8 *address = NULL;  // Initialize to NULL
+
+    if (count == 2147483647)
+        count = 0;
+    count++;
+    spawn = random(count);
+    assignment(spawn, &location, &address);
+    if (WasButtonPressed(BUTTON0))
+    {
+        ButtonAcknowledge(BUTTON0);
+        LcdClearScreen();
+        LcdLoadBitmap(address, &location);
+    }
 } /* end UserApp1SM_Idle() */
      
 
@@ -322,6 +324,54 @@ int random(int count)
   return count % 7;
 }
 
+void assignment(int blockType, PixelBlockType *address, u8 **destination)
+{
+    u8 rowSize = 0;
+    u8 columnSize = 0;
+    
+    switch (blockType)
+    {
+      case 0:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK1;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK4;
+        *destination = &LongBlock[0][0];
+        break;
+      case 1:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
+        *destination = &LBlock[0][0];
+        break;
+      case 2:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
+        *destination = &JBlock[0][0];
+        break;
+      case 3:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
+        *destination = &WeirdBlockRight[0][0];
+        break;
+      case 4:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
+        *destination = &WeirdShapeLeft[0][0];
+        break;
+      case 5:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
+        *destination = &squareBlock[0][0];
+        break;
+      case 6:
+        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
+        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3;
+        *destination = &TBlock[0][0];
+        break;
+    }
+    address->u16RowStart = 25;
+    address->u16ColumnStart = 0;
+    address->u16RowSize = rowSize;
+    address->u16ColumnSize = columnSize;
+}
 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
