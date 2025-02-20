@@ -202,7 +202,8 @@ const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXE
   {0x21, 0x00},
   {0x3F, 0x00}
   };
-  
+  static u8 moveDown = 0;
+  static u8 moveSideways = 0;
   static u16 memoryImage[128][64] = {};
         
 /**********************************************************************************************************************
@@ -210,6 +211,7 @@ Function Definitions
 **********************************************************************************************************************/
 int random(int count);
 void assignment(int blockType, PixelBlockType *address, u8 **destination);
+void move(u8 downwards, u8 sideways);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -293,22 +295,47 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    static int count = 0;
-    PixelBlockType location;
-    u8 spawn = 0;
-    u8 *address = NULL;  // Initialize to NULL
-
-    if (count == 2147483647)
-        count = 0;
-    count++;
-    spawn = random(count);
+  // Variables for Ongoing function
+  static int count = 0;
+  static u8 time = 0;
+  PixelBlockType location;
+  u8 spawn = 0;
+  static u8 downIncrease = 0;
+  static u8 firstPress = 0;
+  u8 *address = NULL;
+  // Count for randomization
+  if (count == 2147483647)
+    count = 0;
+  count++;
+  spawn = random(count);
+  // First press only
+  if (firstPress == 1)
+    time++;
+  // Generate first shape
+  if ((WasButtonPressed(BUTTON0) || WasButtonPressed(BUTTON1)) && firstPress == 0)
+  {
     assignment(spawn, &location, &address);
-    if (WasButtonPressed(BUTTON0))
-    {
-        ButtonAcknowledge(BUTTON0);
-        LcdClearScreen();
-        LcdLoadBitmap(address, &location);
-    }
+    ButtonAcknowledge(BUTTON0);
+    firstPress = 1;
+    LcdLoadBitmap(address, &location);
+  }
+  // Move Left and Right
+  if (WasButtonPressed(BUTTON1))
+  {
+    ButtonAcknowledge(BUTTON1);
+    if (moveSideways < 63)
+      moveSideways += 2;
+  }
+  else if (WasButtonPressed(BUTTON0))
+  {
+    ButtonAcknowledge(BUTTON0);
+    if (moveSideways > 0)
+    moveSideways -= 2;
+  }
+  // Continuous Downwards increase
+  if (time % 150 == 0)
+    downIncrease += 2;
+  move(downIncrease, moveSideways);
 } /* end UserApp1SM_Idle() */
      
 
@@ -367,13 +394,16 @@ void assignment(int blockType, PixelBlockType *address, u8 **destination)
         *destination = &TBlock[0][0];
         break;
     }
-    address->u16RowStart = 25;
-    address->u16ColumnStart = 0;
+    address->u16RowStart = 25 + moveDown;
+    address->u16ColumnStart = 0 + moveSideways;
     address->u16RowSize = rowSize;
     address->u16ColumnSize = columnSize;
 }
 
-
+void move(u8 downwards, u8 sideways)
+{
+  
+}
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
