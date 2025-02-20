@@ -297,6 +297,16 @@ static void UserApp1SM_Idle(void)
   if (count == 2147483647)
     count = 0;
   count++;
+  PixelBlockType test;
+  test.u16RowStart = 20;
+  test.u16ColumnStart = 53;
+  test.u16RowSize = 16;
+  test.u16ColumnSize = 16;
+  if(WasButtonPressed(BUTTON0))
+  {
+    ButtonAcknowledge(BUTTON0);
+    LcdLoadBitmap(&WeirdBlockRight[0][0], &test);
+  }
 } /* end UserApp1SM_Idle() */
      
 
@@ -307,7 +317,8 @@ static void UserApp1SM_Error(void)
   
 } /* end UserApp1SM_Error() */
 
-int random(int count){
+int random(int count)
+{
   return count % 7;
 }
 
