@@ -331,10 +331,6 @@ static void UserApp1SM_Idle(void)
     cleared.u16ColumnStart = NULL;
     cleared.u16RowStart = NULL;
   }
-  if (newShape == 1)
-  {
-    boundary(&bottomBounds, &leftBounds, randomSpawn);
-  }
   // Move Left and Right
   if (WasButtonPressed(BUTTON0) && firstShape == 0)
   {
@@ -362,16 +358,17 @@ static void UserApp1SM_Idle(void)
       randomSpawn = random(count);
       assignment(randomSpawn, &blockPlace, &specBlock);
     }
-    move(downIncrease, moveSideways, &blockPlace);
-    moveSideways = 0;
-    LcdClearPixels(&cleared);
-    LcdLoadBitmap(specBlock, &blockPlace);
     if (newShape == 1)
     {
+      boundary(&bottomBounds, &leftBounds, randomSpawn);
       cleared.u16ColumnSize = blockPlace.u16ColumnSize;
       cleared.u16RowSize = blockPlace.u16RowSize;
       newShape = 0;
     }
+    move(downIncrease, moveSideways, &blockPlace);
+    moveSideways = 0;
+    LcdClearPixels(&cleared);
+    LcdLoadBitmap(specBlock, &blockPlace);
     clear(&blockPlace, &cleared);
   }
 } /* end UserApp1SM_Idle() */
