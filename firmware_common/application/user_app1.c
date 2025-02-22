@@ -210,6 +210,8 @@ Function Definitions
 int random(int count);
 void assignment(int blockType, PixelBlockType *address, u8 **destination);
 void move(u8 downwards, int sideways, PixelBlockType *block);
+void boundary(u16 *bottomside, u16 *leftside, u8 type);
+void clear(PixelBlockType *oldAddress, PixelBlockType *cleared);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -296,59 +298,81 @@ static void UserApp1SM_Idle(void)
   // Variables for Ongoing function
   static int count = 0;
   static u16 time = 1;
-  static PixelBlockType location;
-  u8 spawn = 0;
-  u8 downIncrease = 0;
+  static PixelBlockType blockPlace;
+  static PixelBlockType cleared;
   static int moveSideways = 0;
-  static u8 generate = 0;
-  static u8 *address = NULL;
+  static u8 firstShape = 1;
+  static u8 *specBlock = NULL;
+  static u16 bottomBounds = 0;
+  static u16 leftBounds = 0;
+  static u8 randomSpawn = 0;
+  static u8 newShape = 1;
+  u8 downIncrease = 0;
   // Count for randomization
-  if (count == 2147483647)
+  if (count == 356000)
     count = 0;
   count++;
-  spawn = random(count);
   // First press only
-  if (generate == 1)
+  if (firstShape == 0)
   {
     time++;
   }
   // Generate first shape
-  if ((WasButtonPressed(BUTTON0) || WasButtonPressed(BUTTON1)) && generate == 0)
+  if ((WasButtonPressed(BUTTON0) || WasButtonPressed(BUTTON1)) && firstShape == 1)
   {
-    assignment(spawn, &location, &address);
+    randomSpawn = random(count);
+    assignment(randomSpawn, &blockPlace, &specBlock);
     ButtonAcknowledge(BUTTON0);
     ButtonAcknowledge(BUTTON1);
-    generate = 1;
+    firstShape = 0;
     LcdClearScreen();
-    LcdLoadBitmap(address, &location);
+    cleared.u16ColumnSize = NULL;
+    cleared.u16RowSize = NULL;
+    cleared.u16ColumnStart = NULL;
+    cleared.u16RowStart = NULL;
+  }
+  if (newShape == 1)
+  {
+    boundary(&bottomBounds, &leftBounds, randomSpawn);
   }
   // Move Left and Right
-  if (WasButtonPressed(BUTTON0) && generate == 1 && location.u16RowSize < 63)
+  if (WasButtonPressed(BUTTON0) && firstShape == 0)
   {
     ButtonAcknowledge(BUTTON0);
-    moveSideways = 1;
+    if (blockPlace.u16RowStart > 1)
+      moveSideways = 1;
   }
-  else if (WasButtonPressed(BUTTON1) && generate == 1 && location.u16RowSize > 0)
+  else if (WasButtonPressed(BUTTON1) && firstShape == 0)
   {
     ButtonAcknowledge(BUTTON1);
-    moveSideways = -1;
+    if (blockPlace.u16RowStart < leftBounds)
+      moveSideways = -1;
   }
   // Continuous Downwards increase
-  if (time % 1000 == 0)
+  if (time % 500 == 0)
   {
-    if(time < 108000)
+    if(blockPlace.u16ColumnStart < bottomBounds)
     {
       downIncrease = 1;
     }
     else
     {
       time = 0;
-      generate = 0;
+      newShape = 1;
+      randomSpawn = random(count);
+      assignment(randomSpawn, &blockPlace, &specBlock);
     }
-    move(downIncrease, moveSideways, &location);
+    move(downIncrease, moveSideways, &blockPlace);
     moveSideways = 0;
-    LcdClearScreen();
-    LcdLoadBitmap(address, &location);
+    LcdClearPixels(&cleared);
+    LcdLoadBitmap(specBlock, &blockPlace);
+    if (newShape == 1)
+    {
+      cleared.u16ColumnSize = blockPlace.u16ColumnSize;
+      cleared.u16RowSize = blockPlace.u16RowSize;
+      newShape = 0;
+    }
+    clear(&blockPlace, &cleared);
   }
 } /* end UserApp1SM_Idle() */
      
@@ -365,7 +389,7 @@ int random(int count)
   return count % 7;
 }
 
-void assignment(int blockType, PixelBlockType *address, u8 **destination)
+void assignment(int blockType, PixelBlockType *address, u8 **block)
 {
     u8 rowSize = 0;
     u8 columnSize = 0;
@@ -375,37 +399,37 @@ void assignment(int blockType, PixelBlockType *address, u8 **destination)
       case 0:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK1;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK4;
-        *destination = &LongBlock[0][0];
+        *block = &LongBlock[0][0];
         break;
       case 1:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *destination = &LBlock[0][0];
+        *block = &LBlock[0][0];
         break;
       case 2:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *destination = &JBlock[0][0];
+        *block = &JBlock[0][0];
         break;
       case 3:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *destination = &WeirdBlockRight[0][0];
+        *block = &WeirdBlockRight[0][0];
         break;
       case 4:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *destination = &WeirdShapeLeft[0][0];
+        *block = &WeirdShapeLeft[0][0];
         break;
       case 5:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *destination = &squareBlock[0][0];
+        *block = &squareBlock[0][0];
         break;
       case 6:
         rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
         columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3;
-        *destination = &TBlock[0][0];
+        *block = &TBlock[0][0];
         break;
     }
     address->u16RowStart = 25;
@@ -418,9 +442,33 @@ void move(u8 downwards, int sideways, PixelBlockType *block)
 {
   block->u16ColumnStart += downwards;
   if (sideways == -1)
-    block->u16RowStart--;
+    block->u16RowStart+=1;
   else if (sideways == 1)
-    block->u16RowStart++;
+    block->u16RowStart-=1;
+}
+
+void boundary(u16 *bottomside, u16 *leftside, u8 type)
+{
+  switch(type)
+  {
+    case 0:
+      *leftside = 57;
+      *bottomside = 106;
+      break;
+    case 1: case 2: case 3: case 4: case 5:
+      *leftside = 47;
+      *bottomside = 116;
+      break;
+    case 6:
+      *leftside = 52;
+      *bottomside = 111;
+      break;
+  }
+}
+void clear(PixelBlockType *oldAddress, PixelBlockType *cleared)
+{
+  cleared->u16ColumnStart = oldAddress->u16ColumnStart;
+  cleared->u16RowStart = oldAddress->u16RowStart;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
