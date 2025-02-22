@@ -202,7 +202,7 @@ const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXE
   {0x21, 0x00},
   {0x3F, 0x00}
   };
-  static u16 memoryImage[128][64] = {};
+  static u8 memoryImage[16][64] = {};
         
 /**********************************************************************************************************************
 Function Definitions
@@ -212,6 +212,7 @@ void assignment(int blockType, PixelBlockType *address, u8 **destination);
 void move(u8 downwards, int sideways, PixelBlockType *block);
 void boundary(u16 *bottomside, u16 *leftside, u8 type);
 void clear(PixelBlockType *oldAddress, PixelBlockType *cleared);
+void memoryStorage(PixelBlockType *block, u8 **blockType);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -370,6 +371,7 @@ static void UserApp1SM_Idle(void)
     LcdClearPixels(&cleared);
     LcdLoadBitmap(specBlock, &blockPlace);
     clear(&blockPlace, &cleared);
+    memoryStorage(&blockPlace, &specBlock);
   }
 } /* end UserApp1SM_Idle() */
      
@@ -462,10 +464,22 @@ void boundary(u16 *bottomside, u16 *leftside, u8 type)
       break;
   }
 }
+
 void clear(PixelBlockType *oldAddress, PixelBlockType *cleared)
 {
   cleared->u16ColumnStart = oldAddress->u16ColumnStart;
   cleared->u16RowStart = oldAddress->u16RowStart;
+}
+
+void memoryStorage(PixelBlockType *block, u8 **blockType)
+{
+  for(u8 i = block->u16RowStart, k = 0; i < block -> u16RowStart + block->u16RowSize; i++, k++)
+  {
+    for(u8 j = block->u16ColumnStart, l = 0; j < block->u16ColumnStart + block->u16ColumnSize; j++, l++)
+    {
+      memoryImage[i][j] |=  blockType[k][l];
+    }
+  }
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
