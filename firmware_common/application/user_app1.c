@@ -62,157 +62,60 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
-const u8 startLogo[U8_LCD_IMAGE_ROW_SIZE_25PX][U8_LCD_IMAGE_COL_BYTES_25PX] = {
-  {0xFF, 0xFF, 0xFF, 0x01},
-  {0x1F, 0x00, 0xE0, 0x01},
-  {0xEF, 0xFF, 0xDF, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0xEF, 0xFF, 0xDF, 0x01},
-  {0x1F, 0x80, 0xD0, 0x01},
-  {0xFF, 0xBF, 0xD0, 0x01},
-  {0xFF, 0xBF, 0xD0, 0x01},
-  {0xFF, 0xBF, 0xD0, 0x01},
-  {0xFF, 0xBF, 0xDF, 0x01},
-  {0xFF, 0x01, 0xE0, 0x01},
-  {0xFF, 0xFD, 0xFE, 0x01},
-  {0xFF, 0x85, 0xFE, 0x01},
-  {0xFF, 0x85, 0xFE, 0x01},
-  {0xFF, 0x85, 0xFE, 0x01},
-  {0x1F, 0x84, 0xE0, 0x01},
-  {0xEF, 0xFF, 0xDF, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0x2F, 0x84, 0xD0, 0x01},
-  {0xEF, 0xFF, 0xDF, 0x01}
-  };  
-  
-const u8 LongBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK1][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3PX] = {
-  {0xFF, 0xFF, 0x1F},
-  {0x21, 0x84, 0x10},
-  {0x21, 0x84, 0x10},
-  {0x21, 0x84, 0x10},
-  {0x21, 0x84, 0x10},
-  {0xFF, 0xFF, 0x1F}
-  };
-
-const u8 LBlock [U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0x3F, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x3F, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07}
-  };
-
-const u8 TBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0xE0, 0x07},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0xFF, 0xFF},
-  {0x21, 0x84},
-  {0x21, 0x84},
-  {0x21, 0x84},
-  {0x21, 0x84},
-  {0xFF, 0xFF}
-  };    
-    
-const u8 squareBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK2][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07}
-  };      
-
-const u8 JBlock[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0xE0, 0x07},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0xE0, 0x07},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07}
-  };
-      
-const u8 WeirdShapeLeft[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0x3F, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0xE0, 0x07}
-  };
-
-const u8 WeirdBlockRight[U8_LCD_IMAGE_ROW_PIXEL_BLOCK3][U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2PX] = {
-  {0xE0, 0x07},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0x20, 0x04},
-  {0xFF, 0x07},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0x21, 0x04},
-  {0xFF, 0x07},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x21, 0x00},
-  {0x3F, 0x00}
-  };
-  static u8 memoryImage[16][64] = {};
+// Pointers for specified pixel art of keys
+static u8 *assignedFront = NULL;
+static u8 *assignedBack = NULL;
+// Images of different keys
+extern const u8 startLogo[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 GKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 AKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 BKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 FKeyBack[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 FSharpKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 GSharpKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 ASharpKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 DefaultBackKeys[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 CKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 DKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 EKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 FKeyFront[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 CSharpKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 DSharpKey[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+extern const u8 DefaultFrontKeys[U8_LCD_IMAGE_ROW_SIZE_50PX][U8_LCD_IMAGE_COL_BYTES_50PX];
+//Locations of the keys and text
+static PixelBlockType front;
+static PixelBlockType back;
+const static PixelAddressType textLocation = {0, 18};
+static PixelBlockType clear;
+//Global Variables for specific purposes
+static u8 u8NoteIndex = 0;
+static u8 notesPlayed = 0;
+static u8 newNotes = 0;
+static u8 count = 0;
+static u8 octave = 1;
+static u8 differentLetter = 0;
+static u8 currentNumberOfNotes = 0;
+static char sameNote;
+//Array for text, notes and color
+static char text[4][20] = {"Octave: Third", "Octave: Fourth",
+                          "Octave: Fifth", "Octave: Sixth"};
+const static u8 aau8Color[7][3] = {{RED0, 0xff, 0xff}, 
+                                 {RED0, GREEN0, 0xff}, 
+                                 {0xff, GREEN0, 0xff},
+                                 {0xff, GREEN0, BLUE0},
+                                 {0xff, 0xff, BLUE0},
+                                 {RED0, 0xff, BLUE0},
+                                 {RED0, GREEN0, BLUE0},};
+static u16 au16Notes[4][12] = {{C3, C3S, D3, D3S, E3, F3, F3S, G3, G3S, A3, A3S, B3},
+                              {C4, C4S, D4, D4S, E4, F4, F4S, G4, G4S, A4, A4S, B4},
+                              {C5, C5S, D5, D5S, E5, F5, F5S, G5, G5S, A5, A5S, B5},
+                              {C6, C6S, D6, D6S, E6, F6, F6S, G6, G6S, A6, A6S, B6}};
         
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
-int random(int count);
-void assignment(int blockType, PixelBlockType *address, u8 **destination);
-void move(u8 downwards, int sideways, PixelBlockType *block);
-void boundary(u16 *bottomside, u16 *leftside, u8 type);
-void clear(PixelBlockType *oldAddress, PixelBlockType *cleared);
-void memoryStorage(PixelBlockType *block, u8 **blockType);
+void leds();
+void buzzer();
 /*--------------------------------------------------------------------------------------------------------------------*/
 /*! @publicsection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -238,16 +141,31 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
-  const u8 Welcome[] = {"Welcome to Tetris"};
-  const static PixelAddressType startLocation = {5, 12};
+  // Loads Welcome Screen and texts
+  const u8 Welcome[] = {"Piano Master"};
+  const static PixelAddressType startLocation = {10, 30};
   LcdClearScreen();
   LcdLoadString(Welcome, LCD_FONT_SMALL, &startLocation);
   PixelBlockType startImage;
-  startImage.u16RowStart = 21;
+  startImage.u16RowStart = 25;
   startImage.u16ColumnStart = 53;
   startImage.u16RowSize = 25;
   startImage.u16ColumnSize = 25;
   LcdLoadBitmap(&startLogo[0][0], &startImage);
+  // Initializes specific functions and values
+  PWMAudioSetFrequency(BUZZER1, 500);
+  front.u16RowStart = 10;
+  front.u16ColumnStart = 15;
+  front.u16RowSize = 50;
+  front.u16ColumnSize = 50;
+  back.u16RowStart = 10;
+  back.u16ColumnStart = 65;
+  back.u16RowSize = 50;
+  back.u16ColumnSize = 50;
+  clear.u16ColumnSize = 100;
+  clear.u16RowSize = 7;
+  clear.u16ColumnStart = 18;
+  clear.u16RowStart = 0;
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -296,85 +214,216 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-  // Variables for Ongoing function
-  static int count = 0;
-  static u16 time = 1;
-  static PixelBlockType blockPlace;
-  static PixelBlockType cleared;
-  static int moveSideways = 0;
-  static u8 firstShape = 1;
-  static u8 *specBlock = NULL;
-  static u16 bottomBounds = 0;
-  static u16 leftBounds = 0;
-  static u8 randomSpawn = 0;
-  static u8 newShape = 1;
-  u8 downIncrease = 0;
-  // Count for randomization
-  if (count == 356000)
+  //Keeps track of the number of notes played in Tera Term
+  notesPlayed = G_u8DebugScanfCharCount;
+  //Clears the Ram and newNotes in order to keep playing
+  if(G_u8DebugScanfCharCount >= DEBUG_SCANF_BUFFER_SIZE)
+  {
+    for(int i = 0; i < DEBUG_SCANF_BUFFER_SIZE; i++)
+    {
+      G_au8DebugScanfBuffer[i]='\0';
+    }
+    newNotes = 0;
+    PWMAudioOff(BUZZER1);
+  }
+  //Conditional Statement that reset the time a note is played if multiple notes are pressed
+  if(currentNumberOfNotes < G_u8DebugScanfCharCount)
+  {
     count = 0;
-  count++;
-  // First press only
-  if (firstShape == 0)
-  {
-    time++;
+    newNotes = notesPlayed - 1;
   }
-  // Generate first shape
-  if ((WasButtonPressed(BUTTON0) || WasButtonPressed(BUTTON1)) && firstShape == 1)
+  //Conditional Statement that plays when a new letter is entered into the keyboard
+  if(differentLetter < G_u8DebugScanfCharCount)
   {
-    randomSpawn = random(count);
-    assignment(randomSpawn, &blockPlace, &specBlock);
+    buzzer();
+    differentLetter++;
+    currentNumberOfNotes = G_u8DebugScanfCharCount;
+  }
+  //Conditional Statements that change the octave when the buttons are pressed
+  if (WasButtonPressed(BUTTON0) && octave > 0)
+  {
     ButtonAcknowledge(BUTTON0);
+    octave--;
+    LcdClearPixels(&clear);
+    LcdLoadString(text[octave], LCD_FONT_SMALL, &textLocation);
+  }
+  else if (WasButtonPressed(BUTTON1) && octave < 3)
+  {
     ButtonAcknowledge(BUTTON1);
-    firstShape = 0;
+    octave++;
+    LcdClearPixels(&clear);
+    LcdLoadString(text[octave], LCD_FONT_SMALL, &textLocation);
+  }
+  // Sets the Audio Frequency
+  PWMAudioSetFrequency(BUZZER1, au16Notes[octave][u8NoteIndex]);
+  // Loads the outputs of screen buzzer and lights
+  if (notesPlayed > newNotes)
+  {
+    PWMAudioOn(BUZZER1);
     LcdClearScreen();
-    cleared.u16ColumnSize = NULL;
-    cleared.u16RowSize = NULL;
-    cleared.u16ColumnStart = NULL;
-    cleared.u16RowStart = NULL;
-  }
-  // Move Left and Right
-  if (WasButtonPressed(BUTTON0) && firstShape == 0)
-  {
-    ButtonAcknowledge(BUTTON0);
-    if (blockPlace.u16RowStart > 1)
-      moveSideways = 1;
-  }
-  else if (WasButtonPressed(BUTTON1) && firstShape == 0)
-  {
-    ButtonAcknowledge(BUTTON1);
-    if (blockPlace.u16RowStart < leftBounds)
-      moveSideways = -1;
-  }
-  // Continuous Downwards increase
-  if (time % 500 == 0)
-  {
-    if(blockPlace.u16ColumnStart < bottomBounds)
+    LcdLoadBitmap(assignedFront, &front);
+    LcdLoadBitmap(assignedBack, &back);
+    LcdLoadString(text[octave], LCD_FONT_SMALL, &textLocation);
+    led();
+    count++;
+    // Plays each note for 0.5s
+    if(count >= 100)
     {
-      downIncrease = 1;
-    }
-    else
-    {
-      time = 0;
-      newShape = 1;
-      randomSpawn = random(count);
-      assignment(randomSpawn, &blockPlace, &specBlock);
-    }
-    if (newShape == 1)
-    {
-      boundary(&bottomBounds, &leftBounds, randomSpawn);
-      cleared.u16ColumnSize = blockPlace.u16ColumnSize;
-      cleared.u16RowSize = blockPlace.u16RowSize;
-      newShape = 0;
-    }
-    move(downIncrease, moveSideways, &blockPlace);
-    moveSideways = 0;
-    LcdClearPixels(&cleared);
-    LcdLoadBitmap(specBlock, &blockPlace);
-    clear(&blockPlace, &cleared);
-    memoryStorage(&blockPlace, &specBlock);
+      newNotes++;
+      count = 0;
+      PWMAudioOff(BUZZER1);
+      if (sameNote != G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1])
+      {
+        LcdLoadBitmap(&DefaultFrontKeys[0][0], &front);
+        LcdLoadBitmap(&DefaultBackKeys[0][0], &back);
+      }
+      sameNote = G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1];
+    } 
   }
 } /* end UserApp1SM_Idle() */
-     
+
+/**
+ * Turns the Leds a certain color based on keyboard input
+ * @param None
+ * @return None
+ */
+void led()
+{
+  static u8 color = NULL;
+  // Resets all Leds to off
+  for(u8 ledNumber = 0; ledNumber < 4; ledNumber++)
+    {
+      for (u8 ledColor = 0; ledColor < 3; ledColor++)
+        LedOff((aau8Color[6][ledColor])+ ledNumber);
+    }
+  // Assigns new Led colors based on input
+  switch (G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1])
+    {
+      case 'z':
+        color = 0;
+        break;
+      case 's':
+        color = 0;
+        break;
+      case 'x':
+        color = 1;
+        break;
+      case 'd':
+        color = 1;
+        break;
+      case 'c':
+        color = 2;
+        break;
+      case 'v':
+        color = 3;
+        break;
+      case 'g':
+        color = 3;
+        break;
+      case 'b':
+        color = 4;
+        break;
+      case 'h':
+        color = 4;
+        break;
+      case 'n':
+        color = 5;
+        break;
+      case 'j':
+        color = 5;
+        break;
+      case 'm':
+        color = 6;
+        break;
+    }
+    // Activates the specific colors
+    for(u8 i = 0; i < 3; i++)
+    {
+      if(aau8Color[color][i] != 0xff)
+      {
+        for (u8 j = 0; j < 4; j++)
+          LedOn((aau8Color[color][i])+ j);
+      }
+    }
+}
+
+/**
+ * Turns the buzzer on or off based on Input
+ * @param None
+ * @return None
+ */
+void buzzer()
+{
+  //Assigns all buzzer notes
+  switch (G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1])
+    {
+      case 'z':
+        u8NoteIndex = 0;
+        assignedFront = &CKey[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+      case 's':
+        u8NoteIndex = 1;
+        assignedFront = &CSharpKey[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+      case 'x':
+        u8NoteIndex = 2;
+        assignedFront = &DKey[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+      case 'd':
+        u8NoteIndex = 3;
+        assignedFront = &DSharpKey[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+      case 'c':
+        u8NoteIndex = 4;
+        assignedFront = &EKey[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+      case 'v':
+        u8NoteIndex = 5;
+        assignedFront = &FKeyFront[0][0];
+        assignedBack = &FKeyBack[0][0];
+        break;
+      case 'g':
+        u8NoteIndex = 6;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &FSharpKey[0][0];
+        break;
+      case 'b':
+        u8NoteIndex = 7;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &GKey[0][0];
+        break;
+      case 'h':
+        u8NoteIndex = 8;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &GSharpKey[0][0];
+        break;
+      case 'n':
+        u8NoteIndex = 9;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &AKey[0][0];
+        break;
+      case 'j':
+        u8NoteIndex = 10;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &ASharpKey[0][0];
+        break;
+      case 'm':
+        u8NoteIndex = 11;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &BKey[0][0];
+        break;
+      default:
+        newNotes++;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
+    }
+}
 
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
@@ -383,104 +432,6 @@ static void UserApp1SM_Error(void)
   
 } /* end UserApp1SM_Error() */
 
-int random(int count)
-{
-  return count % 7;
-}
-
-void assignment(int blockType, PixelBlockType *address, u8 **block)
-{
-    u8 rowSize = 0;
-    u8 columnSize = 0;
-    
-    switch (blockType)
-    {
-      case 0:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK1;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK4;
-        *block = &LongBlock[0][0];
-        break;
-      case 1:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *block = &LBlock[0][0];
-        break;
-      case 2:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *block = &JBlock[0][0];
-        break;
-      case 3:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *block = &WeirdBlockRight[0][0];
-        break;
-      case 4:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK3;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *block = &WeirdShapeLeft[0][0];
-        break;
-      case 5:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK2;
-        *block = &squareBlock[0][0];
-        break;
-      case 6:
-        rowSize = U8_LCD_IMAGE_ROW_PIXEL_BLOCK2;
-        columnSize = U8_LCD_IMAGE_COLUMN_PIXEL_BLOCK3;
-        *block = &TBlock[0][0];
-        break;
-    }
-    address->u16RowStart = 25;
-    address->u16ColumnStart = 0;
-    address->u16RowSize = rowSize;
-    address->u16ColumnSize = columnSize;
-}
-
-void move(u8 downwards, int sideways, PixelBlockType *block)
-{
-  block->u16ColumnStart += downwards;
-  if (sideways == -1)
-    block->u16RowStart+=1;
-  else if (sideways == 1)
-    block->u16RowStart-=1;
-}
-
-void boundary(u16 *bottomside, u16 *leftside, u8 type)
-{
-  switch(type)
-  {
-    case 0:
-      *leftside = 57;
-      *bottomside = 106;
-      break;
-    case 1: case 2: case 3: case 4: case 5:
-      *leftside = 47;
-      *bottomside = 116;
-      break;
-    case 6:
-      *leftside = 52;
-      *bottomside = 111;
-      break;
-  }
-}
-
-void clear(PixelBlockType *oldAddress, PixelBlockType *cleared)
-{
-  cleared->u16ColumnStart = oldAddress->u16ColumnStart;
-  cleared->u16RowStart = oldAddress->u16RowStart;
-}
-
-void memoryStorage(PixelBlockType *block, u8 **blockType)
-{
-  for(u8 i = block->u16RowStart, k = 0; i < block -> u16RowStart + block->u16RowSize; i++, k++)
-  {
-    for(u8 j = block->u16ColumnStart, l = 0; j < block->u16ColumnStart + block->u16ColumnSize; j++, l++)
-    {
-      memoryImage[i][j] |=  blockType[k][l];
-    }
-  }
-}
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */
 /*--------------------------------------------------------------------------------------------------------------------*/
