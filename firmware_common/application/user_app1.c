@@ -166,6 +166,7 @@ void UserApp1Initialize(void)
   clear.u16RowSize = 7;
   clear.u16ColumnStart = 18;
   clear.u16RowStart = 0;
+  DebugSetPassthrough();
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -224,6 +225,13 @@ static void UserApp1SM_Idle(void)
       G_au8DebugScanfBuffer[i]='\0';
     }
     newNotes = 0;
+    G_u8DebugScanfCharCount = 0;
+    notesPlayed = 0;
+    u8NoteIndex = 0;
+    newNotes = 0;
+    count = 0;
+    differentLetter = 0;
+    currentNumberOfNotes = 0;
     PWMAudioOff(BUZZER1);
   }
   //Conditional Statement that reset the time a note is played if multiple notes are pressed
@@ -272,6 +280,7 @@ static void UserApp1SM_Idle(void)
       newNotes++;
       count = 0;
       PWMAudioOff(BUZZER1);
+      // Goes back to default screen
       if (sameNote != G_au8DebugScanfBuffer[G_u8DebugScanfCharCount - 1])
       {
         LcdLoadBitmap(&DefaultFrontKeys[0][0], &front);
@@ -417,10 +426,17 @@ void buzzer()
         assignedFront = &DefaultFrontKeys[0][0];
         assignedBack = &BKey[0][0];
         break;
+      // Holds note
+      case ' ':
+        newNotes++;
+        assignedFront = &DefaultFrontKeys[0][0];
+        assignedBack = &DefaultBackKeys[0][0];
+        break;
       default:
         newNotes++;
         assignedFront = &DefaultFrontKeys[0][0];
         assignedBack = &DefaultBackKeys[0][0];
+        PWMAudioOff(BUZZER1);
         break;
     }
 }
